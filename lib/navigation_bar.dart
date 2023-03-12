@@ -27,10 +27,19 @@ class _NavigationHomepageState extends State<NavigationHomepage> {
   }
 }
 
+final List<Product> products = [
+  Product(name: 'iPhone', price: 1000, category: 'Electronics'),
+  Product(name: 'Macbook', price: 2000, category: 'Electronics'),
+  Product(name: 'Dress', price: 50, category: 'Clothing'),
+  Product(name: 'Shoes', price: 100, category: 'Clothing'),
+];
+
 List<Widget> screens() {
   return [
     Homepage(),
-    Searchpage(),
+    Searchpage(
+      products: products,
+    ),
     Basketpage(),
     Favoritepage(),
     Profilepage(),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage(
@@ -8,10 +6,12 @@ class DetailPage extends StatefulWidget {
       required this.title,
       required this.thumbnail,
       required this.rating,
-      required this.description});
+      required this.description,
+      required this.price});
   final String title;
   final String thumbnail;
   final double rating;
+  final int price;
   final String description;
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -21,11 +21,37 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '\$ ${widget.price}',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+            ),
+            TextButton(
+                onPressed: () => true,
+                style: ButtonStyle(
+                    backgroundColor:
+                        const MaterialStatePropertyAll(Colors.black),
+                    shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)))),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+                  child: Text(
+                    'Add to Cart',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ))
+          ],
+        ),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
-            height: 25,
+            height: 55,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

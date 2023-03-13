@@ -29,7 +29,7 @@ class Shop {
         category: json['category'],
         description: json['description'],
         rating: double.parse(json['rating'].toString()),
-        price: json['price'],
+        price: int.parse(json['price'].toString()),
         thumbnail: json['thumbnail']);
   }
 }
@@ -43,38 +43,38 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   List<Shop>? shops = [];
-  // List<Shop>? shops;
-  // late Future<Shop> shops;
+  List<String> categoryList = [];
+  String _searchQuery = '';
+  String? _selectedCategory;
+
   Future<void> fetchShop() async {
     final response =
         await http.get(Uri.parse('https://dummyjson.com/products'));
 
     var body = jsonDecode(response.body)['products'];
+    // var categoryBody = jsonDecode(response.body)['products']['category'];
+    // var testing = body
 
     if (response.statusCode == 200) {
       setState(() {
         for (var shopsJson in body) {
           shops?.add(Shop.fromJson(shopsJson));
+          // shops.add(Shop(id: id, title: title, description: description, price: price, rating: rating, category: category, thumbnail: thumbnail))
         }
+        for (int i = 0; i < shops!.length; i++) {
+          if (!categoryList.contains(shops![i].category)) {
+            categoryList.add(shops![i].category);
+          }
+        }
+
+        // for (var categoryJson in categoryBody) {
+        // }
       });
       print(shops?.map((e) => e.rating));
+      print(categoryList);
     } else {
       print('error');
     }
-    // var test = (body as List).map((e) => e);
-    // print((body as List).map((e) => e));
-    // if (response.statusCode == 200) {
-    //   setState(() {
-    //     shops =
-    //         (body as List).map((e) => Shop.fromJson(e)).cast<Shop>().toList();
-    //   });
-
-    //   print(shops);
-    // }
-    //  else {
-    //   print('object');
-    // }
-    // ;
   }
 
   @override
@@ -96,12 +96,19 @@ class _HomepageState extends State<Homepage> {
               width: MediaQuery.of(context).size.width - 50,
               child: Column(
                 children: [
+                  //--------------------------------//
                   //Search
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0),
                     child: Center(
                       child: SizedBox(
                         child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value.toLowerCase();
+                            });
+                            print(_searchQuery);
+                          },
                           decoration: InputDecoration(
                               filled: true,
                               prefixIcon:
@@ -127,6 +134,7 @@ class _HomepageState extends State<Homepage> {
                   const SizedBox(
                     height: 20,
                   ),
+                  //---------------------------------------//
                   //Card Title
                   Container(
                     decoration: BoxDecoration(
@@ -203,40 +211,104 @@ class _HomepageState extends State<Homepage> {
                       TextButton(onPressed: () => true, child: Text('View all'))
                     ],
                   ),
+                  //------------------------------------//
                   //Filter Categories
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => true,
-                        child: Text('All'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => true,
-                        child: Text('All'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => true,
-                        child: Text('All'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => true,
-                        child: Text('All'),
-                      ),
-                    ],
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 50,
+                    height: 45,
+                    child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: categoryList.map(
+                          (e) {
+                            return SizedBox(
+                              child: e == 'smartphones'
+                                  ? Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: SizedBox(
+                                            height: 45,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedCategory = null;
+                                                });
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  primary:
+                                                      _selectedCategory == null
+                                                          ? Colors.black
+                                                          : Colors.white70),
+                                              child: Text(
+                                                'All',
+                                                style: TextStyle(
+                                                    color: _selectedCategory ==
+                                                            null
+                                                        ? Colors.white
+                                                        : Colors.grey),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: SizedBox(
+                                            height: 45,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedCategory = e;
+                                                });
+                                                print(_selectedCategory);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  primary:
+                                                      _selectedCategory == e
+                                                          ? Colors.black
+                                                          : Colors.white70),
+                                              child: Text(
+                                                '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
+                                                style: TextStyle(
+                                                    color:
+                                                        _selectedCategory == e
+                                                            ? Colors.white
+                                                            : Colors.grey),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _selectedCategory = e;
+                                          });
+                                          print(_selectedCategory);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            primary: _selectedCategory == e
+                                                ? Colors.black
+                                                : Colors.white70),
+                                        child: Text(
+                                          '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
+                                          style: TextStyle(
+                                              color: _selectedCategory == e
+                                                  ? Colors.white
+                                                  : Colors.grey),
+                                        ),
+                                      )),
+                            );
+                          },
+                        ).toList()),
                   ),
+                  //-------------------------------------//
                   //Card
-                  // FutureBuilder(builder: shops)
-                  // ListView.builder(
-                  //   scrollDirection: Axis.vertical,
-                  //   itemCount: shops?.length,
-                  //   itemBuilder: (BuildContext context, int index) {
-                  //     // var test = shops?.map((e) => e);
-                  //     return Text(shops![index].title);
-                  //   },
-                  // )
-                  // Text(shops),
-                  // shops.map((e) => Text(e.title)),
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Wrap(
@@ -246,6 +318,13 @@ class _HomepageState extends State<Homepage> {
                       runSpacing: 16,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: shops!
+                          .where((element) =>
+                              (_selectedCategory == null ||
+                                  element.category == _selectedCategory) &&
+                              (_searchQuery.isEmpty ||
+                                  element.title
+                                      .toLowerCase()
+                                      .contains(_searchQuery)))
                           .map((e) => Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -262,6 +341,7 @@ class _HomepageState extends State<Homepage> {
                                                   description: e.description,
                                                   rating: e.rating,
                                                   thumbnail: e.thumbnail,
+                                                  price: e.price,
                                                 ),
                                               )),
                                           // style: ButtonStyle(

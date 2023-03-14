@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 // import 'package:flutter/services.dart';
 import 'package:madura_shop/navigation_bar.dart';
 
@@ -20,7 +21,7 @@ class myApp extends StatelessWidget {
       value: const SystemUiOverlayStyle(
           statusBarColor: Colors.white,
           statusBarIconBrightness: Brightness.dark),
-      child: MaterialApp(
+      child: GetMaterialApp(
         // theme: ThemeData.light(),
         // color: Colors.white,
         debugShowCheckedModeBanner: false,

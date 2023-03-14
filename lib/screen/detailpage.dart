@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:madura_shop/controller/basketController.dart';
+import 'package:madura_shop/navigation_bar.dart';
+import 'package:madura_shop/screen/basketpage.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage(
@@ -14,12 +18,13 @@ class DetailPage extends StatefulWidget {
   final int price;
   final String description;
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  State<DetailPage> createState() => DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
+class DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
+    final basketController = Get.put(BasketController());
     return Scaffold(
       bottomSheet: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
@@ -31,7 +36,12 @@ class _DetailPageState extends State<DetailPage> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
             ),
             TextButton(
-                onPressed: () => true,
+                onPressed: () {
+                  basketController.addProduct(
+                      widget.title, widget.thumbnail, widget.price);
+                  // print(basketController.Title.value);
+                  Get.to(() => screens()[2]);
+                },
                 style: ButtonStyle(
                     backgroundColor:
                         const MaterialStatePropertyAll(Colors.black),

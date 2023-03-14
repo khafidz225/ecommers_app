@@ -197,6 +197,7 @@ class _BasketpageState extends State<Basketpage> {
                       void addCount() {
                         count++;
                         testing(count.toInt());
+                        // priceTotal.add(count);
 
                         print('test');
                       }

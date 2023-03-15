@@ -6,16 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:madura_shop/screen/searchpage.dart';
 
+import '../controller/api_controller.dart';
 import '../controller/basketController.dart';
 
-class Basketpage extends StatefulWidget {
-  const Basketpage({super.key});
-
-  @override
-  State<Basketpage> createState() => _BasketpageState();
-}
-
-class _BasketpageState extends State<Basketpage> {
+class Basketpage extends StatelessWidget {
+  Basketpage({super.key});
   var count = 0.obs();
 
   increment() {
@@ -36,6 +31,8 @@ class _BasketpageState extends State<Basketpage> {
 
     // var prices = 0.obs;
     // var totalPrices = prices
+
+    RxList testdoang = [].obs;
 
     RxList priceTotal = [].obs;
     testing(int countprice) {
@@ -197,15 +194,15 @@ class _BasketpageState extends State<Basketpage> {
                       void addCount() {
                         count++;
                         testing(count.toInt());
+
+                        final testindex =
+                            testdoang.indexWhere((element) => element == index);
+                        testdoang[testindex] = testdoang[testindex] + 1;
+                        print(testdoang);
                         // priceTotal.add(count);
 
                         print('test');
-                      }
-
-                      removeCount() {
-                        if (count > 1) {
-                          count - 1;
-                        }
+                        print(RxInt(result[index]['price'] * count()));
                       }
 
                       return Padding(
@@ -243,17 +240,36 @@ class _BasketpageState extends State<Basketpage> {
                               children: [
                                 SizedBox(
                                   child: IconButton(
-                                      onPressed: () => removeCount(),
+                                      onPressed: () {
+                                        basketController
+                                            .removeItemsProduct(result[index]);
+                                        print(basketController
+                                            .itemsProduct.values
+                                            .toList());
+                                        print(basketController
+                                            .itemsProduct.values
+                                            .toList()[index]);
+                                      },
                                       icon: Icon(
                                         Icons.remove,
                                       )),
                                 ),
                                 Obx(() => Text(
-                                      '${count}',
+                                      '${basketController.itemsProduct.values.toList()[index]}',
                                       style: TextStyle(fontSize: 18),
                                     )),
                                 IconButton(
-                                    onPressed: () => addCount(),
+                                    onPressed: () {
+                                      basketController
+                                          .addItemsProduct(result[index]);
+                                      print(basketController.itemsProduct.values
+                                          .toList());
+                                      // print(basketController.itemsProduct.keys
+                                      //     .toList());
+                                      print(basketController.itemsProduct.values
+                                          .toList()[index]);
+                                      // print(basketController)
+                                    },
                                     icon: Icon(
                                       Icons.add,
                                     ))
@@ -279,5 +295,3 @@ class _BasketpageState extends State<Basketpage> {
     );
   }
 }
-
-// Text(result[index]['title'])

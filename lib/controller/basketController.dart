@@ -1,15 +1,40 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:madura_shop/controller/api_controller.dart';
+import 'package:madura_shop/navigation_bar.dart';
 import 'package:madura_shop/screen/searchpage.dart';
 
 class BasketController extends GetxController {
-  var titles = ''.obs;
   RxList<Map<String, dynamic>> productList = <Map<String, dynamic>>[].obs;
-  addProduct(String title, String thumbnail, int price) {
-    // if (condition) {
+  addProduct(int id, String title, String thumbnail, int price) {
+    productList.add(
+        {'id': id, 'title': title, 'thumbnail': thumbnail, 'price': price});
+    print(productList.length);
+  }
 
-    // }
-    productList.add({'title': title, 'thumbnail': thumbnail, 'price': price});
+  var itemsProduct = {}.obs;
+
+  addItemsProduct(dynamic shop) {
+    if (itemsProduct.containsKey(shop)) {
+      itemsProduct[shop] += 1;
+    } else {
+      itemsProduct[shop] = 1;
+    }
+
+    // Get.snackbar('Berhasil', 'Horeee');
+    print(itemsProduct);
+  }
+
+  removeItemsProduct(dynamic shop) {
+    if (itemsProduct.containsKey(shop)) {
+      itemsProduct[shop] -= 1;
+    } else {
+      itemsProduct[shop] = 1;
+    }
+
+    print(itemsProduct);
   }
 }
 

@@ -7,11 +7,13 @@ import 'package:madura_shop/screen/basketpage.dart';
 class DetailPage extends StatefulWidget {
   const DetailPage(
       {super.key,
+      required this.id,
       required this.title,
       required this.thumbnail,
       required this.rating,
       required this.description,
       required this.price});
+  final int id;
   final String title;
   final String thumbnail;
   final double rating;
@@ -38,7 +40,7 @@ class DetailPageState extends State<DetailPage> {
             TextButton(
                 onPressed: () {
                   basketController.addProduct(
-                      widget.title, widget.thumbnail, widget.price);
+                      widget.id, widget.title, widget.thumbnail, widget.price);
                   // print(basketController.Title.value);
                   Get.to(() => screens()[2]);
                 },

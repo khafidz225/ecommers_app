@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:madura_shop/controller/api_controller.dart';
 import 'package:madura_shop/screen/detailpage.dart';
 
 class Shop {
@@ -34,58 +36,55 @@ class Shop {
   }
 }
 
-class Homepage extends StatefulWidget {
+class Homepage extends StatelessWidget {
   const Homepage({super.key});
 
-  @override
-  State<Homepage> createState() => _HomepageState();
-}
+  // List<Shop>? shops = [];
+  // List<String> categoryList = [];
+  // var _searchQuery = ''.obs;
+  // RxString _selectedCategory = ''.obs;
 
-class _HomepageState extends State<Homepage> {
-  List<Shop>? shops = [];
-  List<String> categoryList = [];
-  String _searchQuery = '';
-  String? _selectedCategory;
+  // Future<void> fetchShop() async {
+  //   final response =
+  //       await http.get(Uri.parse('https://dummyjson.com/products'));
 
-  Future<void> fetchShop() async {
-    final response =
-        await http.get(Uri.parse('https://dummyjson.com/products'));
+  //   var body = jsonDecode(response.body)['products'];
+  //   // var categoryBody = jsonDecode(response.body)['products']['category'];
+  //   // var testing = body
 
-    var body = jsonDecode(response.body)['products'];
-    // var categoryBody = jsonDecode(response.body)['products']['category'];
-    // var testing = body
+  //   if (response.statusCode == 200) {
+  //     setState(() {
+  //       for (var shopsJson in body) {
+  //         shops?.add(Shop.fromJson(shopsJson));
+  //         // shops.add(Shop(id: id, title: title, description: description, price: price, rating: rating, category: category, thumbnail: thumbnail))
+  //       }
+  //       for (int i = 0; i < shops!.length; i++) {
+  //         if (!categoryList.contains(shops![i].category)) {
+  //           categoryList.add(shops![i].category);
+  //         }
+  //       }
 
-    if (response.statusCode == 200) {
-      setState(() {
-        for (var shopsJson in body) {
-          shops?.add(Shop.fromJson(shopsJson));
-          // shops.add(Shop(id: id, title: title, description: description, price: price, rating: rating, category: category, thumbnail: thumbnail))
-        }
-        for (int i = 0; i < shops!.length; i++) {
-          if (!categoryList.contains(shops![i].category)) {
-            categoryList.add(shops![i].category);
-          }
-        }
+  //       // for (var categoryJson in categoryBody) {
+  //       // }
+  //     });
+  //     // print(shops?.map((e) => e.rating));
+  //     // print(categoryList);
+  //   } else {
+  //     print('error');
+  //   }
+  // }
 
-        // for (var categoryJson in categoryBody) {
-        // }
-      });
-      print(shops?.map((e) => e.rating));
-      print(categoryList);
-    } else {
-      print('error');
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    fetchShop();
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   // fetchShop();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final apiController = Get.put(ApiController());
+    print(apiController.selectedCategory);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -104,10 +103,9 @@ class _HomepageState extends State<Homepage> {
                       child: SizedBox(
                         child: TextFormField(
                           onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value.toLowerCase();
-                            });
-                            print(_searchQuery);
+                            apiController.searchQuery.value =
+                                value.toLowerCase();
+                            print(apiController.searchQuery);
                           },
                           decoration: InputDecoration(
                               filled: true,
@@ -194,7 +192,8 @@ class _HomepageState extends State<Homepage> {
                           ),
 
                           //Right image
-                          Text('Ini Image')
+                          Text('Ini Image'),
+                          // Text(apiController.shops)
                         ],
                       ),
                     ),
@@ -218,184 +217,207 @@ class _HomepageState extends State<Homepage> {
                     height: 45,
                     child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: categoryList.map(
+                        children: apiController.categoryList.map(
                           (e) {
-                            return SizedBox(
-                              child: e == 'smartphones'
-                                  ? Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          child: SizedBox(
-                                            height: 45,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  _selectedCategory = null;
-                                                });
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  primary:
-                                                      _selectedCategory == null
+                            return Obx(() => SizedBox(
+                                  child: e == 'smartphones' || e == ''
+                                      ? Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5.0),
+                                              child: SizedBox(
+                                                height: 45,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    apiController
+                                                        .selectedCategory
+                                                        .value = 'all';
+                                                    print(apiController
+                                                        .selectedCategory);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                      primary: apiController
+                                                                  .selectedCategory ==
+                                                              'all'
                                                           ? Colors.black
                                                           : Colors.white70),
-                                              child: Text(
-                                                'All',
-                                                style: TextStyle(
-                                                    color: _selectedCategory ==
-                                                            null
-                                                        ? Colors.white
-                                                        : Colors.grey),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          child: SizedBox(
-                                            height: 45,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  _selectedCategory = e;
-                                                });
-                                                print(_selectedCategory);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  primary:
-                                                      _selectedCategory == e
-                                                          ? Colors.black
-                                                          : Colors.white70),
-                                              child: Text(
-                                                '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
-                                                style: TextStyle(
-                                                    color:
-                                                        _selectedCategory == e
+                                                  child: Text(
+                                                    'All',
+                                                    style: TextStyle(
+                                                        color: apiController
+                                                                    .selectedCategory ==
+                                                                'all'
                                                             ? Colors.white
                                                             : Colors.grey),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5.0),
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _selectedCategory = e;
-                                          });
-                                          print(_selectedCategory);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            primary: _selectedCategory == e
-                                                ? Colors.black
-                                                : Colors.white70),
-                                        child: Text(
-                                          '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
-                                          style: TextStyle(
-                                              color: _selectedCategory == e
-                                                  ? Colors.white
-                                                  : Colors.grey),
-                                        ),
-                                      )),
-                            );
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5.0),
+                                              child: SizedBox(
+                                                height: 45,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    apiController
+                                                        .selectedCategory
+                                                        .value = e;
+                                                    print(apiController
+                                                        .selectedCategory
+                                                        .value);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                      primary: apiController
+                                                                  .selectedCategory ==
+                                                              e.obs
+                                                          ? Colors.black
+                                                          : Colors.white70),
+                                                  child: Text(
+                                                    '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
+                                                    style: TextStyle(
+                                                        color: apiController
+                                                                    .selectedCategory ==
+                                                                e.obs
+                                                            ? Colors.white
+                                                            : Colors.grey),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              apiController
+                                                  .selectedCategory.value = e;
+                                              print(apiController
+                                                  .selectedCategory.value);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                primary: apiController
+                                                            .selectedCategory ==
+                                                        e.obs
+                                                    ? Colors.black
+                                                    : Colors.white70),
+                                            child: Text(
+                                              '${e[0].toUpperCase()}${e.substring(1).toLowerCase()}',
+                                              style: TextStyle(
+                                                  color: apiController
+                                                              .selectedCategory ==
+                                                          e.obs
+                                                      ? Colors.white
+                                                      : Colors.grey),
+                                            ),
+                                          )),
+                                ));
                           },
                         ).toList()),
                   ),
                   //-------------------------------------//
                   //Card
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: Wrap(
-                      // shrinkWrap: true,
-                      // crossAxisCount: 2,
-                      spacing: 16,
-                      runSpacing: 16,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: shops!
-                          .where((element) =>
-                              (_selectedCategory == null ||
-                                  element.category == _selectedCategory) &&
-                              (_searchQuery.isEmpty ||
-                                  element.title
-                                      .toLowerCase()
-                                      .contains(_searchQuery)))
-                          .map((e) => Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.4,
-                                      child: TextButton(
-                                          onPressed: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailPage(
-                                                  title: e.title,
-                                                  description: e.description,
-                                                  rating: e.rating,
-                                                  thumbnail: e.thumbnail,
-                                                  price: e.price,
-                                                ),
-                                              )),
-                                          // style: ButtonStyle(
-                                          //   backgroundColor:
-                                          //       const MaterialStatePropertyAll(
-                                          //           Colors.white),
-                                          //   // shape: MaterialStatePropertyAll(
-                                          //   //     RoundedRectangleBorder(
-                                          //   //         borderRadius:
-                                          //   //             BorderRadius.circular(
-                                          //   //                 20)))
-                                          // ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image.network(
-                                                    e.thumbnail,
-                                                    height: 150,
-                                                    width: 200,
+                  Obx(() => SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Wrap(
+                          // shrinkWrap: true,
+                          // crossAxisCount: 2,
+                          spacing: 16,
+                          runSpacing: 16,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: apiController.shops!
+                              .where((element) =>
+                                  (apiController.selectedCategory.value ==
+                                          'all' ||
+                                      element.category ==
+                                          apiController
+                                              .selectedCategory.value) &&
+                                  (apiController.searchQuery.isEmpty ||
+                                      element.title.obs
+                                          .toLowerCase()
+                                          .contains(apiController.searchQuery)))
+                              .map((e) => Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.4,
+                                          child: TextButton(
+                                              onPressed: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DetailPage(
+                                                      id: e.id,
+                                                      title: e.title,
+                                                      description:
+                                                          e.description,
+                                                      rating: e.rating,
+                                                      thumbnail: e.thumbnail,
+                                                      price: e.price,
+                                                    ),
                                                   )),
-                                              Text(
-                                                e.title,
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14),
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Row(
+                                              // style: ButtonStyle(
+                                              //   backgroundColor:
+                                              //       const MaterialStatePropertyAll(
+                                              //           Colors.white),
+                                              //   // shape: MaterialStatePropertyAll(
+                                              //   //     RoundedRectangleBorder(
+                                              //   //         borderRadius:
+                                              //   //             BorderRadius.circular(
+                                              //   //                 20)))
+                                              // ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
+                                                  ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      child: Image.network(
+                                                        e.thumbnail,
+                                                        height: 150,
+                                                        width: 200,
+                                                      )),
                                                   Text(
-                                                    '\$',
+                                                    e.title,
                                                     style: TextStyle(
-                                                        color: Colors.grey),
+                                                        color: Colors.black,
+                                                        fontSize: 14),
                                                   ),
-                                                  Text(
-                                                    '${e.price}',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
+                                                  SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        '\$',
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                      Text(
+                                                        '${e.price}',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black),
+                                                      )
+                                                    ],
                                                   )
                                                 ],
-                                              )
-                                            ],
-                                          )))
-                                ],
-                              ))
-                          .toList(),
-                    ),
-                  ),
+                                              )))
+                                    ],
+                                  ))
+                              .toList(),
+                        ),
+                      )),
                 ],
               ),
             ),
